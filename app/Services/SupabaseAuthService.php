@@ -122,6 +122,39 @@ class SupabaseAuthService
     }
 
     /**
+     * Update user details (e.g. password, email) in Supabase.
+     *
+     * @param string $accessToken
+     * @param array $attributes Data to update (e.g. ['password' => 'newpassword'])
+     * @return array{success: bool, data?: array, error?: string}
+     */
+    public function updateUser(string $accessToken, array $attributes): array
+    {
+        try {
+            $response = Http::withoutVerifying()->withHeaders([
+                'apikey' => $this->anonKey,
+                'Authorization' => "Bearer {$accessToken}",
+                'Content-Type' => 'application/json',
+            ])->put("{$this->baseUrl}/auth/v1/user", $attributes);
+
+            if ($response->successful()) {
+                return [
+                    'success' => true,
+                    'data' => $response->json(),
+                ];
+            }
+
+            $error = $response->json('msg') ?? $response->json('error_description') ?? 'Failed to update user.';
+            Log::warning('Supabase user update failed', ['error' => $error]);
+
+            return ['success' => false, 'error' => $error];
+        } catch (\Exception $e) {
+            Log::error('Supabase updateUser exception', ['message' => $e->getMessage()]);
+            return ['success' => false, 'error' => 'Connection error. Please try again.'];
+        }
+    }
+
+    /**
      * Sign out (invalidate the session on Supabase side).
      *
      * @param string $accessToken

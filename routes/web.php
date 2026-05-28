@@ -58,9 +58,10 @@ Route::middleware(['supabase.auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Profile & Accounts
-    Route::get('/profile', function () {
-        return view('profile.index');
-    })->name('profile.index');
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('/accounts/switch', [AccountController::class, 'switchAccount'])->name('accounts.switch');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
     Route::post('/accounts/transactions', [App\Http\Controllers\AccountTransactionController::class, 'store'])->name('transactions.store');

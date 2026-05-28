@@ -16,9 +16,23 @@
 
     {{-- Stats / Info --}}
     <div class="glass p-5 rounded-2xl border border-gray-800 space-y-4">
-        <div>
-            <p class="text-xs text-gray-500 mb-1">Email</p>
-            <p class="text-sm font-medium text-white">{{ session('supabase_user_email') ?? 'Trader' }}</p>
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-xs text-gray-500 mb-1">Username</p>
+                <p class="text-sm font-medium text-white">{{ $profile->username ?? 'Trader' }}</p>
+            </div>
+            <a href="{{ route('profile.edit') }}" class="px-3 py-1.5 bg-blue-500/10 text-blue-400 text-xs font-bold rounded-lg hover:bg-blue-500/20 transition">Edit Profile</a>
+        </div>
+        <hr class="border-gray-800">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-xs text-gray-500 mb-1">Default Max Loss</p>
+                <p class="text-sm font-medium text-white">${{ number_format($profile->default_max_loss, 2) }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 mb-1">Discipline Score</p>
+                <p class="text-sm font-medium {{ $profile->discipline_score >= 80 ? 'text-green-400' : ($profile->discipline_score >= 50 ? 'text-yellow-400' : 'text-red-400') }}">{{ $profile->discipline_score }} / 100</p>
+            </div>
         </div>
         <hr class="border-gray-800">
         <div>
