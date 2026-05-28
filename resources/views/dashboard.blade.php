@@ -7,9 +7,16 @@
 
     {{-- Top Bar: Profile & Account Switcher --}}
     <div class="flex justify-between items-start">
-        <div>
-            <h2 class="text-gray-400 text-sm font-medium">Welcome back,</h2>
-            <p class="text-white font-bold text-lg">{{ $profile->username }}</p>
+        <div class="flex items-center gap-2">
+            <div>
+                <h2 class="text-gray-400 text-sm font-medium">Welcome back,</h2>
+                <div class="flex items-center gap-2">
+                    <p class="text-white font-bold text-lg">{{ $profile->username }}</p>
+                    <button @click="$dispatch('open-dashboard-settings')" class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </button>
+                </div>
+            </div>
         </div>
         
         <div class="flex flex-col items-end gap-2">
@@ -124,7 +131,7 @@
             </svg>
             <div>
                 <h3 class="text-red-500 font-bold text-lg">Daily Loss Limit Reached!</h3>
-                <p class="text-red-300/80 text-sm mt-1">You've hit your max loss of ${{ number_format($todayRitual->max_loss_limit, 2) }}. Walk away from the screen now to protect your capital and earn discipline points.</p>
+                <p class="text-red-300/80 text-sm mt-1">You've hit your max loss of {{ $activeAccount->currency ?? 'USD' }} {{ number_format($todayRitual->max_loss_limit, 2) }}. Walk away from the screen now to protect your capital and earn discipline points.</p>
             </div>
         </div>
     </div>
@@ -147,7 +154,7 @@
                     <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">Account Balance</p>
                     <div class="flex items-center gap-3">
                         <h3 class="text-3xl font-bold text-white">
-                            ${{ number_format($currentBalance, 2) }}
+                            {{ $activeAccount->currency ?? 'USD' }} {{ number_format($currentBalance, 2) }}
                         </h3>
                         <div class="flex items-center gap-1">
                             <button @click="openTx = true; txType = 'deposit'" class="w-7 h-7 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center hover:bg-green-500/40 transition">
@@ -162,7 +169,7 @@
                 <div class="text-right">
                     <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">Today's PnL</p>
                     <p class="text-lg font-bold {{ $dailyPnl >= 0 ? 'text-green-400' : 'text-red-400' }}">
-                        {{ $dailyPnl >= 0 ? '+' : '' }}${{ number_format($dailyPnl, 2) }}
+                        {{ $dailyPnl >= 0 ? '+' : '' }}{{ $activeAccount->currency ?? 'USD' }} {{ number_format(abs($dailyPnl), 2) }}
                     </p>
                 </div>
             </div>
@@ -199,7 +206,7 @@
 
             <div class="flex justify-between items-end mb-2">
                 <span class="text-gray-400 text-xs font-medium uppercase">Daily Limit Status</span>
-                <span class="text-gray-400 text-xs font-medium">Max: ${{ number_format($todayRitual->max_loss_limit, 2) }}</span>
+                <span class="text-gray-400 text-xs font-medium">Max: {{ $activeAccount->currency ?? 'USD' }} {{ number_format($todayRitual->max_loss_limit, 2) }}</span>
             </div>
 
             {{-- Progress Bar for Loss --}}
@@ -331,7 +338,7 @@
                     </div>
                     <div class="text-right">
                         <p class="font-bold text-sm {{ $trade->pnl >= 0 ? 'text-green-400' : 'text-red-400' }}">
-                            {{ $trade->pnl >= 0 ? '+' : '' }}${{ number_format($trade->pnl, 2) }}
+                            {{ $trade->pnl >= 0 ? '+' : '' }}{{ $activeAccount->currency ?? 'USD' }} {{ number_format(abs($trade->pnl), 2) }}
                         </p>
                     </div>
                 </div>
@@ -354,7 +361,10 @@
 
 </div>
 
+@include('dashboard.settings-modal')
+
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('equityChart', () => ({

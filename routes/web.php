@@ -65,7 +65,11 @@ Route::middleware(['supabase.auth'])->group(function () {
     Route::post('/accounts/switch', [AccountController::class, 'switchAccount'])->name('accounts.switch');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
     Route::post('/accounts/transactions', [App\Http\Controllers\AccountTransactionController::class, 'store'])->name('transactions.store');
-
+    
+    // Settings & Pairs
+    Route::post('/settings/dashboard', [App\Http\Controllers\SettingController::class, 'updateDashboardSettings'])->name('settings.dashboard');
+    Route::post('/settings/pairs', [App\Http\Controllers\SettingController::class, 'storePair'])->name('settings.pairs.store');
+    Route::delete('/settings/pairs/{id}', [App\Http\Controllers\SettingController::class, 'destroyPair'])->name('settings.pairs.destroy');
     // Analytics Dashboard
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 

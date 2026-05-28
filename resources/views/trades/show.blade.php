@@ -25,12 +25,12 @@
         <p class="text-gray-400 text-sm mb-4">{{ \Carbon\Carbon::parse($trade->created_at)->format('M d, Y • H:i') }}</p>
         
         @if($trade->pnl !== null)
-            <div>
-                <p class="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1">Net PnL</p>
-                <h2 class="text-4xl font-bold {{ $trade->pnl >= 0 ? 'text-green-400' : 'text-red-400' }}">
-                    {{ $trade->pnl >= 0 ? '+' : '' }}${{ number_format($trade->pnl, 2) }}
-                </h2>
-            </div>
+                <div class="text-right">
+                    <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Net PnL</p>
+                    <p class="text-3xl font-bold {{ $trade->pnl >= 0 ? 'text-green-400' : 'text-red-400' }}">
+                        {{ $trade->pnl >= 0 ? '+' : '' }}{{ $activeAccount->currency ?? 'USD' }} {{ number_format(abs($trade->pnl), 2) }}
+                    </p>
+                </div>
         @else
             <div class="inline-block px-3 py-1 bg-amber-500/20 text-amber-500 text-sm font-bold rounded-lg border border-amber-500/30">
                 ACTIVE POSITION

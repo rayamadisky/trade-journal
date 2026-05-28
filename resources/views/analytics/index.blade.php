@@ -21,7 +21,7 @@
             @endif
             <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Total Net PnL</p>
             <h2 class="text-4xl font-bold {{ $totalPnl >= 0 ? 'text-green-400' : 'text-red-400' }}">
-                {{ $totalPnl >= 0 ? '+' : '' }}${{ number_format($totalPnl, 2) }}
+                {{ $totalPnl >= 0 ? '+' : '' }}{{ $activeAccount->currency ?? 'USD' }} {{ number_format(abs($totalPnl), 2) }}
             </h2>
         </div>
 
@@ -68,12 +68,12 @@
             {{-- Expectancy --}}
             <div class="glass p-4 rounded-2xl flex flex-col justify-between">
                 <p class="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">Expectancy</p>
-                <h3 class="text-xl font-bold {{ $expectancy >= 0 ? 'text-green-400' : 'text-red-400' }}">{{ $expectancy >= 0 ? '+' : '' }}${{ number_format($expectancy, 2) }}</h3>
+                <h3 class="text-xl font-bold {{ $expectancy >= 0 ? 'text-green-400' : 'text-red-400' }}">{{ $expectancy >= 0 ? '+' : '' }}{{ $activeAccount->currency ?? 'USD' }} {{ number_format(abs($expectancy), 2) }}</h3>
             </div>
             {{-- Max Drawdown --}}
             <div class="glass p-4 rounded-2xl flex flex-col justify-between">
                 <p class="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">Max Drawdown</p>
-                <h3 class="text-xl font-bold text-red-400">-${{ number_format($maxDrawdown, 2) }}</h3>
+                <h3 class="text-xl font-bold text-red-400">-{{ $activeAccount->currency ?? 'USD' }} {{ number_format($maxDrawdown, 2) }}</h3>
             </div>
             {{-- Recovery Factor --}}
             <div class="glass p-4 rounded-2xl flex flex-col justify-between">
@@ -93,12 +93,12 @@
             {{-- Largest Win --}}
             <div class="glass p-4 rounded-2xl flex flex-col justify-between">
                 <p class="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">Largest Win</p>
-                <h3 class="text-sm font-bold text-green-400">+${{ number_format($largestWin, 2) }}</h3>
+                <h3 class="text-sm font-bold text-green-400">+{{ $activeAccount->currency ?? 'USD' }} {{ number_format($largestWin, 2) }}</h3>
             </div>
             {{-- Largest Loss --}}
             <div class="glass p-4 rounded-2xl flex flex-col justify-between">
                 <p class="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">Largest Loss</p>
-                <h3 class="text-sm font-bold text-red-400">-${{ number_format(abs($largestLoss), 2) }}</h3>
+                <h3 class="text-sm font-bold text-red-400">-{{ $activeAccount->currency ?? 'USD' }} {{ number_format(abs($largestLoss), 2) }}</h3>
             </div>
         </div>
     </div>
@@ -130,7 +130,7 @@
                     </div>
                     <div class="text-right">
                         <p class="font-bold {{ $stat['pnl'] >= 0 ? 'text-green-400' : 'text-red-400' }}">
-                            {{ $stat['pnl'] >= 0 ? '+' : '' }}${{ number_format($stat['pnl'], 2) }}
+                            {{ $stat['pnl'] >= 0 ? '+' : '' }}{{ $activeAccount->currency ?? 'USD' }} {{ number_format(abs($stat['pnl']), 2) }}
                         </p>
                     </div>
                 </div>
@@ -162,7 +162,7 @@
                         </div>
                         <div class="text-right">
                             <p class="font-bold text-lg {{ $trade->pnl >= 0 ? 'text-green-400' : 'text-red-400' }}">
-                                {{ $trade->pnl >= 0 ? '+' : '' }}${{ number_format($trade->pnl, 2) }}
+                                {{ $trade->pnl >= 0 ? '+' : '' }}{{ $activeAccount->currency ?? 'USD' }} {{ number_format(abs($trade->pnl), 2) }}
                             </p>
                         </div>
                     </div>
@@ -203,7 +203,7 @@
             </div>
             <div>
                 <h4 class="text-purple-400 font-bold mb-1">Max Drawdown</h4>
-                <p class="text-gray-400 text-sm">The maximum observed loss from a peak in your equity curve. It measures the biggest dollar drop your account has suffered before recovering.</p>
+                <p class="text-gray-400 text-sm">The maximum observed loss from a peak in your equity curve. It measures the biggest drop your account has suffered before recovering.</p>
             </div>
             <div>
                 <h4 class="text-purple-400 font-bold mb-1">Recovery Factor</h4>

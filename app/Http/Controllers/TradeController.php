@@ -22,8 +22,9 @@ class TradeController extends Controller
     {
         $profile = $request->input('_profile');
         $ritual = $request->input('_ritual');
+        $tradingPairs = \App\Models\TradingPair::where('user_id', $profile->id)->get();
 
-        return view('trades.create', compact('profile', 'ritual'));
+        return view('trades.create', compact('profile', 'ritual', 'tradingPairs'));
     }
 
     /**

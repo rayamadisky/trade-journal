@@ -43,9 +43,18 @@
             <div>
                 <label class="block text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Instrument Pair</label>
                 <div class="relative">
-                    <input type="text" name="pair" required placeholder="e.g. XAUUSD" value="{{ old('pair') }}"
-                        class="w-full bg-gray-900 border border-gray-700 text-white rounded-xl px-4 py-3 font-bold focus:border-purple-500 focus:ring-1 focus:ring-purple-500 uppercase transition-colors"
-                    >
+                    @if(isset($tradingPairs) && $tradingPairs->count() > 0)
+                        <select name="pair" required class="w-full bg-gray-900 border border-gray-700 text-white rounded-xl px-4 py-3 font-bold focus:border-purple-500 focus:ring-1 focus:ring-purple-500 uppercase transition-colors">
+                            <option value="" disabled selected>Select a Pair</option>
+                            @foreach($tradingPairs as $tp)
+                                <option value="{{ $tp->symbol }}" {{ old('pair') == $tp->symbol ? 'selected' : '' }}>{{ $tp->symbol }}</option>
+                            @endforeach
+                        </select>
+                    @else
+                        <div class="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+                            You haven't added any Trading Pairs yet. Please add them in the Dashboard Settings (⚙️) before logging a trade.
+                        </div>
+                    @endif
                 </div>
                 @error('pair') <p class="mt-1 text-xs text-red-400">{{ $message }}</p> @enderror
             </div>

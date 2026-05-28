@@ -129,6 +129,8 @@ class DashboardController extends Controller
             }
         }
 
+        $tradingPairs = \App\Models\TradingPair::where('user_id', $profile->id)->get();
+
         return view('dashboard', compact(
             'profile',
             'todayRitual',
@@ -138,7 +140,8 @@ class DashboardController extends Controller
             'lossLimitHit',
             'currentBalance',
             'activeAccount',
-            'equityData'
+            'equityData',
+            'tradingPairs'
         ));
     }
 }
