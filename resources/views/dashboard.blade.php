@@ -14,37 +14,42 @@
         
         <div class="flex flex-col items-end gap-2">
             {{-- Account Switcher Dropdown (Kanan Atas) --}}
-            @if(isset($userAccounts) && $userAccounts->count() > 0)
             <div x-data="{ open: false }" class="relative">
-                <button @click="open = !open" @click.away="open = false" class="flex items-center gap-2 bg-gray-800 border border-gray-700 px-3 py-1.5 rounded-xl text-xs font-bold text-white hover:bg-gray-700 transition">
-                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                    {{ $activeAccount->name }}
-                    <svg class="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                </button>
-                
-                <div x-show="open" x-transition style="display: none;" class="absolute top-full right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-xl shadow-xl z-50 py-1">
-                    <p class="px-3 py-1 text-[10px] uppercase font-bold text-gray-500">Switch Account</p>
-                    @foreach($userAccounts as $acc)
-                        <form method="POST" action="{{ route('accounts.switch') }}">
-                            @csrf
-                            <input type="hidden" name="account_id" value="{{ $acc->id }}">
-                            <button type="submit" class="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition flex items-center justify-between">
-                                {{ $acc->name }}
-                                @if($activeAccount->id === $acc->id)
-                                    <svg class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                                @endif
+                @if(isset($userAccounts) && $userAccounts->count() > 0)
+                    <button @click="open = !open" @click.away="open = false" class="flex items-center gap-2 bg-gray-800 border border-gray-700 px-3 py-1.5 rounded-xl text-xs font-bold text-white hover:bg-gray-700 transition">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        {{ $activeAccount->name }}
+                        <svg class="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    
+                    <div x-show="open" x-transition style="display: none;" class="absolute top-full right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-xl shadow-xl z-50 py-1">
+                        <p class="px-3 py-1 text-[10px] uppercase font-bold text-gray-500">Switch Account</p>
+                        @foreach($userAccounts as $acc)
+                            <form method="POST" action="{{ route('accounts.switch') }}">
+                                @csrf
+                                <input type="hidden" name="account_id" value="{{ $acc->id }}">
+                                <button type="submit" class="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition flex items-center justify-between">
+                                    {{ $acc->name }}
+                                    @if($activeAccount && $activeAccount->id === $acc->id)
+                                        <svg class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                    @endif
+                                </button>
+                            </form>
+                        @endforeach
+                        <div class="border-t border-gray-700 mt-1 pt-1">
+                            <button @click="$dispatch('open-add-account')" class="w-full text-left px-3 py-2 text-sm text-purple-400 hover:bg-gray-700 font-bold transition flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                                Add New Account
                             </button>
-                        </form>
-                    @endforeach
-                    <div class="border-t border-gray-700 mt-1 pt-1">
-                        <button @click="$dispatch('open-add-account')" class="w-full text-left px-3 py-2 text-sm text-purple-400 hover:bg-gray-700 font-bold transition flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                            Add New Account
-                        </button>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <button @click="$dispatch('open-add-account')" class="flex items-center gap-2 bg-purple-600 border border-purple-500 px-3 py-1.5 rounded-xl text-xs font-bold text-white hover:bg-purple-500 transition">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        Add Account
+                    </button>
+                @endif
             </div>
-            @endif
 
             {{-- Add Account Modal (Alpine.js) --}}
             <div x-data="{ open: false }" @open-add-account.window="open = true" class="relative z-50">
