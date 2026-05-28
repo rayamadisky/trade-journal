@@ -46,7 +46,7 @@ class EnsureSupabaseAuth
                     session([
                         'supabase_access_token' => $data['access_token'],
                         'supabase_refresh_token' => $data['refresh_token'],
-                        'supabase_user' => $data['user'],
+                        'supabase_user_id' => $data['user']['id'],
                     ]);
 
                     $userId = $data['user']['id'];
@@ -84,7 +84,7 @@ class EnsureSupabaseAuth
         }
 
         // Get user profile
-        $userId = session('supabase_user')['id'];
+        $userId = session('supabase_user_id');
         $profile = \App\Models\Profile::where('user_id', $userId)->first();
 
         if (!$profile) {
