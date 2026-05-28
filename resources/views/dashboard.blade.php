@@ -233,12 +233,21 @@
 
         {{-- Primary Action Button --}}
         @if(!$lossLimitHit)
-            <a href="{{ route('trades.create') }}" class="flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-2xl shadow-lg shadow-purple-500/20 active:scale-[0.98] transition-transform">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                Log New Trade
-            </a>
+            @if(isset($activeAccount))
+                <a href="{{ route('trades.create') }}" class="flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-2xl shadow-lg shadow-purple-500/20 active:scale-[0.98] transition-transform">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Log New Trade
+                </a>
+            @else
+                <button @click="$dispatch('open-add-account')" class="flex items-center justify-center gap-2 w-full py-4 bg-gray-800 border-2 border-dashed border-gray-600 text-gray-300 font-bold rounded-2xl active:scale-[0.98] transition-transform hover:bg-gray-700 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Create Trading Account to Start
+                </button>
+            @endif
         @endif
     @endif
 

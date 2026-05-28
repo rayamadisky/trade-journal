@@ -20,6 +20,10 @@ class TradeController extends Controller
      */
     public function create(Request $request)
     {
+        if (!session('active_account_id')) {
+            return redirect()->route('dashboard')->with('error', 'Please create a trading account first before logging a trade.');
+        }
+
         $profile = $request->input('_profile');
         $ritual = $request->input('_ritual');
         $tradingPairs = \App\Models\TradingPair::where('user_id', $profile->id)->get();
@@ -32,6 +36,10 @@ class TradeController extends Controller
      */
     public function store(Request $request, SupabaseStorageService $storage)
     {
+        if (!session('active_account_id')) {
+            return redirect()->route('dashboard')->with('error', 'Please create a trading account first before logging a trade.');
+        }
+
         $validated = $request->validate([
             'pair' => 'required|string|max:20',
             'direction' => 'required|in:Long,Short',
