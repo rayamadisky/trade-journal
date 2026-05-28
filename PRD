@@ -1,0 +1,59 @@
+Product Requirements Document (PRD): TradeRitual App
+1. Ringkasan Eksekutif
+TradeRitual adalah aplikasi trading journal berbasis mobile yang berfokus pada pembentukan gaya hidup dan disiplin trader. Berbeda dengan jurnal konvensional yang hanya mencatat Profit & Loss (PnL), aplikasi ini memprioritaskan manajemen risiko, evaluasi psikologi, dan memberikan insight otomatis menggunakan agen AI untuk membantu trader mengenali pola kelemahan mereka sendiri.
+
+2. Target Pengguna
+Trader ritel aktif di instrumen volatilitas tinggi (XAUUSD, S&P 500, Forex major pairs).
+
+Trader yang menggunakan analisis berbasis order flow atau price action yang membutuhkan dokumentasi visual (screenshot chart).
+
+Trader yang sering berjuang melawan emosi (overtrading, revenge trading) dan membutuhkan sistem akuntabilitas.
+
+3. Fitur Utama & Prioritas Rilis
+Fase 1: MVP (Minimum Viable Product) - Core Lifestyle
+Pre-Market & Post-Market Check-in:
+
+Input: Kondisi emosi (Skala 1-5), jam tidur, target maksimal loss harian (nominal/persentase).
+
+Logic: Jika loss harian tercapai, aplikasi memberikan warning keras untuk berhenti.
+
+Smart Trade Entry:
+
+Input data standar: Pair, Long/Short, Entry Price, Stop Loss, Take Profit, Lot Size.
+
+Custom Tags: Liquidity Sweep, Imbalance, News Event.
+
+Image Upload: Integrasi storage untuk upload screenshot chart (sebelum dan sesudah eksekusi) atau data heatmap/orderbook.
+
+Discipline Dashboard (Gamifikasi):
+
+Metrik utama bukan total profit, melainkan Discipline Score.
+
+Streak tracker: Bertambah jika user mengisi jurnal lengkap dan mematuhi batas stop loss harian.
+
+Fase 2: Monetisasi & AI Integration
+AI Trading Coach (Pro Feature):
+
+Menggunakan API Large Language Model (seperti DeepSeek atau Kimi) untuk memproses teks jurnal, tags, dan hasil trade.
+
+Output: Insight proaktif mingguan (Misal: "Akurasi trade buy di XAUUSD saat sesi New York turun 40% jika mood kamu di bawah rata-rata. Kurangi lot size saat kondisi ini.").
+
+Advanced Analytics:
+
+Filter dan pencarian trade berdasarkan tags spesifik.
+
+Kalkulasi win rate, Risk-to-Reward (RR) ratio rata-rata, dan drawdown maksimal.
+
+4. Spesifikasi Teknis (Tech Stack)
+Mengingat kebutuhan akan deployment yang cepat, arsitektur frontend yang responsif, dan backend yang solid:
+
+Frontend / UI: Bisa dikembangkan sebagai Progressive Web App (PWA) agar terasa native di HP, menggunakan kombinasi Laravel untuk logic routing dan Tailwind CSS untuk styling antarmuka (wajib ada fitur Dark Mode).
+
+Backend & Database: Supabase. Sangat ideal untuk menangani autentikasi user, database relasional (PostgreSQL) untuk pencatatan trade, dan Supabase Storage untuk menyimpan file screenshot chart.
+
+AI Engine: Integrasi API pihak ketiga (DeepSeek / Kimi / OpenAI) yang diorkestrasi di sisi backend untuk menarik ringkasan data user dan membalas dengan prompt analitik khusus.
+
+5. Model Bisnis (Monetisasi)
+Basic (Gratis): Jurnal trade maksimal 30 entri per bulan, pre/post-market checklist, storage foto dibatasi.
+
+Pro (Langganan Bulanan - B2C SaaS): Entri tidak terbatas, storage screenshot beresolusi tinggi, analitik lanjutan, dan fitur unggulan AI Trading Coach.

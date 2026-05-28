@@ -1,0 +1,129 @@
+1. Struktur Database (Supabase / PostgreSQL)
+Kita buat relasi yang efisien. Supabase sudah punya sistem Auth bawaan, jadi kita tinggal bikin tabel yang terhubung dengan auth.users.
+
+Tabel 1: profiles
+(Tabel untuk menyimpan data profil dan skor gamifikasi)
+
+id (UUID, Primary Key)
+
+user_id (UUID, Foreign Key ke auth.users)
+
+username (String)
+
+discipline_score (Integer, Default: 0) -> Untuk gamifikasi.
+
+default_max_loss (Decimal) -> Batas loss harian default user.
+
+created_at (Timestamp)
+
+Tabel 2: daily_rituals
+(Tabel esensial untuk mencatat Pre-Market & Post-Market, jantung dari aplikasi)
+
+id (UUID, Primary Key)
+
+user_id (UUID, Foreign Key ke profiles)
+
+date (Date)
+
+sleep_hours (Integer) -> Berapa jam tidur semalam.
+
+pre_mood (Integer, 1-5) -> Skala mood sebelum trading.
+
+max_loss_limit (Decimal) -> Limit loss spesifik hari itu.
+
+post_mood (Integer, 1-5, Nullable) -> Skala mood setelah tutup chart.
+
+followed_plan (Boolean, Nullable) -> Apakah hari ini disiplin?
+
+daily_notes (Text, Nullable)
+
+Tabel 3: trades
+(Tabel jurnal utama. Menggunakan JSONB untuk tags agar lebih fleksibel tanpa perlu bikin tabel pivot tambahan)
+
+id (UUID, Primary Key)
+
+user_id (UUID, Foreign Key ke profiles)
+
+ritual_id (UUID, Foreign Key ke daily_rituals) -> Setiap trade terikat pada ritual hari itu.
+
+pair (String) -> Contoh: XAUUSD, SPX, EURUSD.
+
+direction (String) -> Long / Short.
+
+entry_price (Decimal)
+
+stop_loss (Decimal)
+
+take_profit (Decimal)
+
+exit_price (Decimal, Nullable)
+
+lot_size (Decimal)
+
+pnl (Decimal, Nullable) -> Profit/Loss dalam $. Nullable saat posisi masih floating.
+
+tags (JSONB) -> Contoh: ["Liquidity Sweep", "Imbalance", "News"].
+
+screenshot_entry (String, Nullable) -> URL gambar dari Supabase Storage.
+
+screenshot_exit (String, Nullable) -> URL gambar dari Supabase Storage.
+
+trade_notes (Text, Nullable)
+
+created_at (Timestamp)
+
+2. Alur UI/UX (Mobile View & Tailwind Concept)
+Desain UI wajib menggunakan Dark Mode secara default. Ini standar tools profesional karena lebih ramah di mata saat mantengin chart berjam-jam.
+
+Screen 1: The Dashboard (Home)
+
+Top Bar: Menampilkan Discipline Score dengan ikon api (streak harian).
+
+Hero Section: Peringatan visual. Jika user belum mengisi ritual, muncul tombol besar yang stand-out (misal warna amber-500 di Tailwind): "Complete Pre-Market Ritual".
+
+Middle Section: Ringkasan hari ini. Daily Max Loss Limit vs Current PnL. Jika PnL sudah mendekati batas loss, warnanya berubah merah (red-500).
+
+Bottom Section: Daftar trade yang masih berjalan (Floating).
+
+Navbar (Bawah): Home | Journal | AI Coach | Profile.
+
+Screen 2: Pre-Market Ritual (Flow sebelum trading)
+
+UI Style: Cards minimalis dengan slider atau toggles.
+
+Pertanyaan 1: "Berapa jam lu tidur semalam?" (Input angka).
+
+Pertanyaan 2: "Gimana kondisi mental/fokus lu hari ini?" (5 ikon emoji dari frustrasi sampai sangat fokus).
+
+Pertanyaan 3: "Set batas maksimal loss hari ini:" (Otomatis terisi dari default_max_loss tapi bisa diubah).
+
+Tombol Submit: "I'm Ready to Trade". Setelah diklik, sistem membuka akses ke form Entry Trade.
+
+Screen 3: Trade Entry Form (Cepat & Taktis)
+
+UI Style: Form satu kolom yang dioptimalkan untuk jempol.
+
+Instrumen & Arah: Dropdown (XAUUSD, S&P 500) dan dua tombol besar: LONG (Hijau) / SHORT (Merah).
+
+Angka: Input untuk Entry, SL, TP, dan Lot Size. (Bisa ditambahkan tombol kalkulator risiko kecil di sampingnya).
+
+Tags: Kumpulan tombol pill (kapsul) yang bisa diklik ganda (misal klik "Order Block", "News").
+
+Visual Evidence: Area drag-and-drop atau tombol upload yang terhubung ke galeri HP untuk mengunggah screenshot chart atau tangkapan layar order flow (seperti dari Bookmap/GoCharting).
+
+Screen 4: Trade Review (Post-Trade)
+
+Saat user menutup trade, mereka wajib mengisi Exit Price dan hasil PnL.
+
+Ada area teks untuk menulis evaluasi: "Kenapa lu exit? Kena SL, TP, atau cut loss manual karena panik?"
+
+Upload screenshot exit.
+
+3. Logika "Habit" di Background (Backend Logic)
+Untuk memastikan aplikasi ini benar-benar menjadi lifestyle:
+
+Proteksi Entry: Jika user mencoba menambah trade baru tapi belum mengisi daily_rituals hari itu, frontend akan nge-blokir (pakai middleware di Laravel) dan ngelempar user balik ke layar Pre-Market.
+
+Alert Sistem: Jika total pnl negatif hari itu dari seluruh trade sudah menyentuh max_loss_limit yang diset pagi harinya, muncul pop-up besar: "Daily Loss Limit Reached. Walk away from the screen."
+
+Discipline Gamification: Kalau user nyentuh batas loss TAPI mereka berhenti trading (tidak memaksakan entri lagi di hari yang sama), discipline_score mereka MENDAPAT tambahan poin. Ini mindset shift yang berharga buat trader.
