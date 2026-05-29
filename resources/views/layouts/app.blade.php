@@ -7,7 +7,7 @@
     <title>@yield('title', 'TradeRitual')</title>
 
     {{-- PWA Setup --}}
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
     <link rel="apple-touch-icon" href="/icons/icon.svg">
     <meta name="description" content="TradeRitual - Master your trading discipline through psychology-first journaling.">
     <meta name="csrf-token" content="{{ csrf_token() }}">
