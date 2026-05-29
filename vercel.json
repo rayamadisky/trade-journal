@@ -11,8 +11,12 @@
     },
     "routes": [
         {
-            "src": "/(css|js|images)/(.*)",
+            "src": "/(css|js|images|icons|build)/(.*)",
             "dest": "/public/$1/$2"
+        },
+        {
+            "src": "/(manifest\\.json|sw\\.js|favicon\\.ico|robots\\.txt)",
+            "dest": "/public/$1"
         },
         {
             "src": "/(.*)",
