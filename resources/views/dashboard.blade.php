@@ -3,7 +3,7 @@
 @section('title', 'TradeRitual — Dashboard')
 
 @section('content')
-<div class="px-4 pt-6 pb-6 space-y-6 page-enter">
+<div x-data class="px-4 pt-6 pb-6 space-y-6 page-enter">
 
     {{-- Top Bar: Profile & Account Switcher --}}
     <div class="flex justify-between items-start">
