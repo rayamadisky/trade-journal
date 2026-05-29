@@ -2,6 +2,46 @@
 <div x-data="{ 
     open: false,
     tab: 'general',
+    pairs: {{ Js::from($tradingPairs ?? []) }},
+    newSymbol: '',
+    isLoading: false,
+    addPair() {
+        if (!this.newSymbol) return;
+        this.isLoading = true;
+        fetch('{{ route('settings.pairs.store') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ symbol: this.newSymbol })
+        }).then(res => res.json()).then(data => {
+            this.isLoading = false;
+            if (data.pair) {
+                this.pairs.push(data.pair);
+                this.newSymbol = '';
+            } else if (data.error) {
+                alert(data.error);
+            }
+        }).catch(e => {
+            this.isLoading = false;
+        });
+    },
+    deletePair(id) {
+        if (!confirm('Are you sure you want to delete this pair?')) return;
+        fetch('/settings/pairs/' + id, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        }).then(res => {
+            if(res.ok) {
+                this.pairs = this.pairs.filter(p => p.id !== id);
+            }
+        });
+    }
 }" @open-dashboard-settings.window="open = true" class="relative z-50">
     <div x-show="open" x-transition.opacity class="fixed inset-0 bg-black/80 backdrop-blur-sm" style="display: none;"></div>
     <div x-show="open" x-transition.scale.80 style="display: none;" class="fixed inset-0 flex items-center justify-center p-4">
@@ -58,38 +98,37 @@
 
                 {{-- Pairs Tab --}}
                 <div x-show="tab === 'pairs'" x-transition style="display: none;">
-                    <form method="POST" action="{{ route('settings.pairs.store') }}" class="mb-6">
-                        @csrf
+                    <form @submit.prevent="addPair" class="mb-6">
                         <label class="block text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Add New Pair</label>
                         <div class="flex gap-2">
-                            <input type="text" name="symbol" required placeholder="e.g., XAUUSD, NQ, BTC" class="flex-1 bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 uppercase">
-                            <button type="submit" class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-purple-400 font-bold rounded-xl border border-gray-700 transition">Add</button>
+                            <input type="text" x-model="newSymbol" required placeholder="e.g., XAUUSD, NQ, BTC" class="flex-1 bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 uppercase">
+                            <button type="submit" :disabled="isLoading" class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-purple-400 font-bold rounded-xl border border-gray-700 transition disabled:opacity-50">
+                                <span x-show="!isLoading">Add</span>
+                                <span x-show="isLoading">...</span>
+                            </button>
                         </div>
                     </form>
 
                     <div>
                         <h4 class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3">Your Saved Pairs</h4>
-                        @if(isset($tradingPairs) && $tradingPairs->count() > 0)
+                        <template x-if="pairs.length > 0">
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                @foreach($tradingPairs as $pair)
+                                <template x-for="pair in pairs" :key="pair.id">
                                     <div class="flex items-center justify-between bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 group">
-                                        <span class="text-sm font-bold text-white">{{ $pair->symbol }}</span>
-                                        <form method="POST" action="{{ route('settings.pairs.destroy', $pair->id) }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition" title="Delete">
-                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                            </button>
-                                        </form>
+                                        <span class="text-sm font-bold text-white" x-text="pair.symbol"></span>
+                                        <button @click="deletePair(pair.id)" type="button" class="text-gray-500 hover:text-red-400 transition" title="Delete">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                        </button>
                                     </div>
-                                @endforeach
+                                </template>
                             </div>
-                        @else
+                        </template>
+                        <template x-if="pairs.length === 0">
                             <div class="text-center py-6 border-2 border-dashed border-gray-800 rounded-2xl">
                                 <p class="text-sm text-gray-500">No trading pairs added yet.</p>
                                 <p class="text-xs text-gray-600 mt-1">Add your pairs above so you can easily select them when logging trades.</p>
                             </div>
-                        @endif
+                        </template>
                     </div>
                 </div>
             </div>

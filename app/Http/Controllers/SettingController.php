@@ -59,27 +59,36 @@ class SettingController extends Controller
         // Check if already exists
         $exists = TradingPair::where('user_id', $userId)->where('symbol', $symbol)->exists();
         if ($exists) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => 'Trading pair already exists.'], 422);
+            }
             return back()->with('error', 'Trading pair already exists.');
         }
 
-        TradingPair::create([
+        $pair = TradingPair::create([
             'user_id' => $userId,
             'symbol' => $symbol,
         ]);
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'pair' => $pair]);
+        }
         return back()->with('success', 'Trading pair added.');
     }
 
     /**
      * Delete a trading pair.
      */
-    public function destroyPair($id)
+    public function destroyPair(Request $request, $id)
     {
         $userId = session('profile_id');
         $pair = TradingPair::where('id', $id)->where('user_id', $userId)->firstOrFail();
         
         $pair->delete();
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
         return back()->with('success', 'Trading pair deleted.');
     }
 }
